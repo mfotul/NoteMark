@@ -1,4 +1,4 @@
-package com.example.notemark.presentation.components
+package com.example.notemark.note.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.padding
@@ -10,6 +10,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -17,7 +18,8 @@ import androidx.compose.ui.unit.dp
 fun NoteButton(
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isEnabled: Boolean
 ) {
     Button(
         onClick = onClick,
@@ -25,13 +27,19 @@ fun NoteButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
         ),
+        enabled = isEnabled,
         modifier = modifier
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onPrimary,
-            modifier = Modifier.padding(4.dp)
+            color = if (isEnabled)
+                MaterialTheme.colorScheme.onPrimary
+            else
+                MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier
+                .padding(4.dp)
+                .alpha(if (isEnabled) 1f else 0.38f)
         )
     }
 }
@@ -63,6 +71,7 @@ fun NoteButtonPreview() {
     NoteButton(
         text = "Get Started",
         onClick = {},
+        isEnabled = false,
         modifier = Modifier
     )
 }

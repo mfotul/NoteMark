@@ -5,4 +5,18 @@
     <string name="get_started">Get Started</string>
     <string name="login">Log In</string>
     <string name="capture_your_thoughts_and_ideas">Capture your thoughts and ideas.</string>
+    <string name="log_in">Log In</string>
+    <string name="email">Email</string>
+    <string name="jon_doe_email">john.doe@example.com</string>
+    <string name="password">Password</string>
+    <string name="hide_password">Hide password</string>
+    <string name="show_password">Show password</string>
+    <string name="dont_have_account">Don’t have an account?</string>
+    <string name="create_account">Create account</string>
+    <string name="username">Username</string>
+    <string name="jon_doe">John.doe</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="username_supporting_text">Use between 3 and 20 characters for your username.</string>
+    <string name="password_supporting_text">Use 8+ characters with a number or symbol for better\nsecurity.</string>
 </resources>
