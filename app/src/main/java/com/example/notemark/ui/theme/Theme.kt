@@ -13,7 +13,7 @@ private val colorScheme = lightColorScheme(
     onSurfaceVariant = onSurfaceVariant,
     error = error,
     surfaceContainerLowest = surfaceContainerLowest,
-
+    inverseSurface = inverseSurface,
 )
 
 @Composable

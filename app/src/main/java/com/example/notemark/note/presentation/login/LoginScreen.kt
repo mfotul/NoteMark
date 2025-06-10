@@ -7,18 +7,21 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -35,55 +38,67 @@ import com.example.notemark.ui.theme.NoteMarkTheme
 fun LoginScreen(
     isPortrait: Boolean,
     isTablet: Boolean,
+    email: String,
+    password: String,
+    onEvent: (LoginEvent) -> Unit,
     onRegisterClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.navigationBars)
-            .background(color = MaterialTheme.colorScheme.primary)
-            .padding(top = if (isPortrait) 40.dp else 20.dp)
-    ) {
-        if (isPortrait) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+    Scaffold { padding ->
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.primary)
+                .padding(padding)
+        ) {
+            if (isPortrait) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+                        )
+                        .fillMaxSize()
+                        .padding(if (isTablet) 124.dp else 16.dp)
+                ) {
+                    LoginRegisterTop(
+                        title = stringResource(R.string.log_in),
+                        isTablet = isTablet
                     )
-                    .fillMaxSize()
-                    .padding(if (isTablet) 124.dp else 16.dp)
-            ) {
-                LoginRegisterTop(
-                    title = stringResource(R.string.log_in),
-                    isTablet = isTablet
-                )
-                Spacer(modifier = Modifier.height(48.dp))
-                LoginScreenMain(
-                    onRegisterClick = onRegisterClick,
-                )
-            }
-        } else {
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-                        shape = RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp)
+                    Spacer(modifier = Modifier.height(48.dp))
+                    LoginScreenMain(
+                        email = email,
+                        password = password,
+                        onEvent = onEvent,
+                        onRegisterClick = onRegisterClick,
                     )
-                    .padding(48.dp)
-            ) {
-                LoginRegisterTop(
-                    title = stringResource(R.string.log_in),
-                    isTablet = isTablet,
-                    modifier = Modifier.weight(1f)
-                )
-                LoginScreenMain(
-                    onRegisterClick = onRegisterClick,
-                    modifier = Modifier.weight(1f)
-                )
+                }
+            } else {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                            shape = RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp)
+                        )
+                        .padding(48.dp)
+                ) {
+                    LoginRegisterTop(
+                        title = stringResource(R.string.log_in),
+                        isTablet = isTablet,
+                        modifier = Modifier.weight(1f)
+                    )
+                    LoginScreenMain(
+                        email = email,
+                        password = password,
+                        onEvent = onEvent,
+                        onRegisterClick = onRegisterClick,
+                        modifier = Modifier
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState())
+                    )
+                }
             }
         }
     }
@@ -92,23 +107,33 @@ fun LoginScreen(
 
 @Composable
 fun LoginScreenMain(
+    email: String,
+    password: String,
+    onEvent: (LoginEvent) -> Unit,
     onRegisterClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    val isLoginButtonEnabled by remember(email, password) {
+        derivedStateOf {
+            email.isNotEmpty() && password.isNotEmpty()
+        }
+    }
+    
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
         NoteTextField(
-            value = "",
-            onValueChange = {},
+            value = email,
+            onValueChange = { onEvent(LoginEvent.ChangeEmail(it)) },
             label = stringResource(R.string.email),
             placeholder = stringResource(R.string.jon_doe_email),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
         Spacer(modifier = Modifier.height(16.dp))
         NoteTextField(
-            value = "",
-            onValueChange = {},
+            value = password,
+            onValueChange = { onEvent(LoginEvent.ChangePassword(it)) },
             label = stringResource(R.string.password),
             placeholder = stringResource(R.string.password),
             isPassword = true,
@@ -117,8 +142,8 @@ fun LoginScreenMain(
         Spacer(modifier = Modifier.height(24.dp))
         NoteButton(
             text = stringResource(R.string.log_in),
-            onClick = {},
-            isEnabled = false,
+            onClick = { onEvent(LoginEvent.Login) },
+            isEnabled = isLoginButtonEnabled,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(32.dp))
@@ -145,6 +170,9 @@ fun LoginScreenPreview() {
         LoginScreen(
             isPortrait = true,
             isTablet = false,
+            email = "",
+            password = "",
+            onEvent = {},
             onRegisterClick = {},
         )
     }
@@ -156,7 +184,10 @@ fun LoginScreenPreviewLandscape() {
     NoteMarkTheme {
         LoginScreen(
             isPortrait = false,
-            isTablet = false,
+            isTablet = true,
+            email = "",
+            password = "",
+            onEvent = {},
             onRegisterClick = { },
         )
     }
@@ -167,6 +198,9 @@ fun LoginScreenPreviewLandscape() {
 fun LoginScreenPreviewTablet() {
     NoteMarkTheme {
         LoginScreen(
+            email = "",
+            password = "",
+            onEvent = {},
             isPortrait = true,
             isTablet = true,
             onRegisterClick = { },

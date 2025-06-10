@@ -36,6 +36,8 @@ fun NoteTextField(
     placeholder: String,
     modifier: Modifier = Modifier,
     isPassword: Boolean = false,
+    isError: Boolean = false,
+    errorText: String? = null,
     supportingText: String? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
 ) {
@@ -63,11 +65,15 @@ fun NoteTextField(
                 )
             },
             supportingText = {
-                if (supportingText != null && isFocused) {
-                    Text(
+                if (supportingText != null  && isFocused) {
+                    TextFieldSupportingText(
                         text = supportingText,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        isError = false
+                    )
+                } else if (errorText != null && isError && !isFocused) {
+                    TextFieldSupportingText(
+                        text = errorText,
+                        isError = true
                     )
                 }
             },
@@ -90,12 +96,15 @@ fun NoteTextField(
                 }
             },
             singleLine = true,
+            isError = isError && !isFocused,
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
                 unfocusedBorderColor = MaterialTheme.colorScheme.surface,
                 focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                 cursorColor = MaterialTheme.colorScheme.primary,
+                errorCursorColor = MaterialTheme.colorScheme.error,
+                errorBorderColor = MaterialTheme.colorScheme.error,
             ),
             shape = RoundedCornerShape(12.dp),
             keyboardOptions = keyboardOptions,
@@ -106,6 +115,23 @@ fun NoteTextField(
                 }
         )
     }
+}
+
+@Composable
+fun TextFieldSupportingText(
+    text: String,
+    isError: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodySmall,
+        color = if (isError)
+            MaterialTheme.colorScheme.error
+        else
+            MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier
+    )
 }
 
 @Composable

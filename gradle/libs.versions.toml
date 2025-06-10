@@ -10,8 +10,13 @@ activityCompose = "1.10.1"
 composeBom = "2025.06.00"
 adaptive = "1.1.0"
 coreSplashscreen = "1.0.1"
-kotlinxSerialization = "1.7.3"
+kotlinxSerialization = "1.8.1"
 navigationCompose = "2.9.0"
+ktor = "3.1.3"
+koin = "4.0.4"
+lifecycleViewmodelCompose = "2.9.1"
+lifecycleRuntimeCompose = "2.9.1"
+datastorePreferences = "1.1.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -32,6 +37,18 @@ androidx-adaptive = { group = "androidx.compose.material3.adaptive", name = "ada
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 kotlinx-serialization = { group= "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -39,3 +56,17 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
+[bundles]
+ktor = [
+    "ktor-client-cio",
+    "ktor-client-content-negotiation",
+    "ktor-client-core",
+    "ktor-client-logging",
+    "ktor-serialization-kotlinx-json",
+    "ktor-client-auth"
+]
+koin = [
+    "koin-core",
+    "koin-android",
+    "koin-androidx-compose"
+]

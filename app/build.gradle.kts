@@ -19,7 +19,15 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    val properties = org.jetbrains.kotlin.konan.properties.Properties()
+    properties.load(project.rootProject.file("local.properties").inputStream())
+
     buildTypes {
+        defaultConfig {
+            buildConfigField("String", "BASE_URL", properties.getProperty("BASE_URL"))
+            buildConfigField("String", "USER_EMAIL", properties.getProperty("USER_EMAIL"))
+        }
+
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -37,6 +45,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -54,6 +63,12 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.kotlinx.serialization)
     implementation(libs.androidx.navigation.compose)
+
+    implementation(libs.bundles.ktor)
+    implementation(libs.bundles.koin)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.datastore.preferences)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -18,5 +18,20 @@
     <string name="repeat_password">Repeat password</string>
     <string name="already_have_account">Already have an account?</string>
     <string name="username_supporting_text">Use between 3 and 20 characters for your username.</string>
-    <string name="password_supporting_text">Use 8+ characters with a number or symbol for better\nsecurity.</string>
+    <string name="password_supporting_text">Use 8+ characters with a number or symbol for better security.</string>
+    <string name="username_short">Username must be at least 3 characters.</string>
+    <string name="username_long">Username can’t be longer than 20 characters.</string>
+    <string name="invalid_email">Invalid email provided</string>
+    <string name="password_short">Password must be at least 8 characters and include a number or symbol.</string>
+    <string name="password_mismatch">Passwords do not match</string>
+    <string name="request_timeout">The request timed out. Try again.</string>
+    <string name="too_many_requests">Too many requests. Try again later.</string>
+    <string name="no_internet">No internet connection. Check your network settings.</string>
+    <string name="server_error">Our servers are having an issue. Try again later.</string>
+    <string name="serialization">There was a problem processing the data. Try again.</string>
+    <string name="conflict">A conflict occurred. Review your input and try again.</string>
+    <string name="method_not_allowed">The requested action isn\'t allowed.</string>
+    <string name="unauthorized">You\'re not authorized to perform this action.</string>
+    <string name="bad_request">The request was invalid. Check your input.</string>
+    <string name="unknown">An unknown error occurred. Try again.</string>
 </resources>

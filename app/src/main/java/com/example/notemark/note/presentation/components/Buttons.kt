@@ -2,9 +2,11 @@ package com.example.notemark.note.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -19,7 +21,8 @@ fun NoteButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isEnabled: Boolean
+    isEnabled: Boolean,
+    isLoading: Boolean = false
 ) {
     Button(
         onClick = onClick,
@@ -30,17 +33,23 @@ fun NoteButton(
         enabled = isEnabled,
         modifier = modifier
     ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.titleSmall,
-            color = if (isEnabled)
-                MaterialTheme.colorScheme.onPrimary
-            else
-                MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier
-                .padding(4.dp)
-                .alpha(if (isEnabled) 1f else 0.38f)
-        )
+        if (isLoading)
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(24.dp)
+            )
+        else
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleSmall,
+                color = if (isEnabled)
+                    MaterialTheme.colorScheme.onPrimary
+                else
+                    MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier
+                    .padding(4.dp)
+                    .alpha(if (isEnabled) 1f else 0.38f)
+            )
     }
 }
 
@@ -71,7 +80,8 @@ fun NoteButtonPreview() {
     NoteButton(
         text = "Get Started",
         onClick = {},
-        isEnabled = false,
+        isEnabled = true,
+        isLoading = true,
         modifier = Modifier
     )
 }
