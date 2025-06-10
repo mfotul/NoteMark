@@ -17,7 +17,6 @@ import kotlinx.coroutines.launch
 
 class RegisterViewModel(
     private val noteMarkDataSource: NoteMarkDataSource,
-    private val noteMarkDataStore: NoteMarkDataStore
 ) : ViewModel() {
     private val _state = MutableStateFlow(RegisterState())
     val state = _state.asStateFlow()

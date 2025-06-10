@@ -14,7 +14,7 @@ suspend inline fun <reified T> responseToResult(
         in 200..299 -> {
             try {
                 Result.Success(response.body<T>())
-            } catch(e: NoTransformationFoundException) {
+            } catch(_: NoTransformationFoundException) {
                 Result.Error(NetworkError.SERIALIZATION)
             }
         }

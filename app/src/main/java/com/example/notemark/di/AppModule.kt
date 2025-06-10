@@ -1,7 +1,6 @@
 package com.example.notemark.di
 
 import android.content.Context
-import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import com.example.notemark.core.data.datastore.UserPreferencesSerializer
@@ -10,7 +9,6 @@ import com.example.notemark.note.data.datastore.UserPreferencesDataStore
 import com.example.notemark.note.data.networking.RemoteNoteMarkDataSource
 import com.example.notemark.note.domain.NoteMarkDataSource
 import com.example.notemark.note.domain.NoteMarkDataStore
-import com.example.notemark.note.domain.UserPreferences
 import com.example.notemark.note.presentation.login.LoginViewModel
 import com.example.notemark.note.presentation.register.RegisterViewModel
 import io.ktor.client.engine.cio.CIO
