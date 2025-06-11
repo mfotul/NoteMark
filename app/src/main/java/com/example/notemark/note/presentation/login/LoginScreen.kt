@@ -50,6 +50,7 @@ fun LoginScreen(
     isTablet: Boolean,
     email: String,
     password: String,
+    isLoading: Boolean,
     onEvent: (LoginEvent) -> Unit,
     onRegisterClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -102,6 +103,7 @@ fun LoginScreen(
                     LoginScreenMain(
                         email = email,
                         password = password,
+                        isLoading = isLoading,
                         onEvent = onEvent,
                         onRegisterClick = onRegisterClick,
                     )
@@ -124,6 +126,7 @@ fun LoginScreen(
                     LoginScreenMain(
                         email = email,
                         password = password,
+                        isLoading = isLoading,
                         onEvent = onEvent,
                         onRegisterClick = onRegisterClick,
                         modifier = Modifier
@@ -142,6 +145,7 @@ fun LoginScreenMain(
     email: String,
     password: String,
     onEvent: (LoginEvent) -> Unit,
+    isLoading: Boolean,
     onRegisterClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -175,6 +179,7 @@ fun LoginScreenMain(
         NoteButton(
             text = stringResource(R.string.log_in),
             onClick = { onEvent(LoginEvent.Login) },
+            isLoading = isLoading,
             isEnabled = isLoginButtonEnabled,
             modifier = Modifier.fillMaxWidth()
         )
@@ -204,6 +209,7 @@ fun LoginScreenPreview() {
             isTablet = false,
             email = "",
             password = "",
+            isLoading = false,
             onEvent = {},
             onRegisterClick = {},
         )
@@ -219,6 +225,7 @@ fun LoginScreenPreviewLandscape() {
             isTablet = false,
             email = "",
             password = "",
+            isLoading = false,
             onEvent = {},
             onRegisterClick = { },
         )
@@ -233,6 +240,7 @@ fun LoginScreenPreviewTablet() {
             email = "",
             password = "",
             onEvent = {},
+            isLoading = false,
             isPortrait = true,
             isTablet = true,
             onRegisterClick = { },

@@ -84,6 +84,7 @@ fun Navigation() {
                 isTablet = isTablet,
                 email = uiState.email,
                 password = uiState.password,
+                isLoading = uiState.isLoading,
                 onEvent = viewModel::onEvent
             )
         }
