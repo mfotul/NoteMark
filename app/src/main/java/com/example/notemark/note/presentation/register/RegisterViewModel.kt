@@ -5,10 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.notemark.core.domain.util.onError
 import com.example.notemark.core.domain.util.onSuccess
-import com.example.notemark.note.domain.NoteMarkDataSource
 import com.example.notemark.core.presentation.util.SnackBarController
 import com.example.notemark.core.presentation.util.SnackBarEvent
-import com.example.notemark.note.domain.NoteMarkDataStore
+import com.example.notemark.note.domain.NoteMarkDataSource
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

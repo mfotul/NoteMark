@@ -147,7 +147,6 @@ fun RegisterScreen(
     }
 }
 
-
 @Composable
 fun RegisterScreenMain(
     username: String,

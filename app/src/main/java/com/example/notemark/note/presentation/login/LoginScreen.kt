@@ -17,22 +17,32 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.notemark.R
+import com.example.notemark.core.domain.util.NetworkError
+import com.example.notemark.core.presentation.util.ObserveAsEvent
+import com.example.notemark.core.presentation.util.SnackBarController
+import com.example.notemark.core.presentation.util.toString
 import com.example.notemark.note.presentation.components.LoginRegisterTop
 import com.example.notemark.note.presentation.components.NoteButton
 import com.example.notemark.note.presentation.components.NoteTextField
 import com.example.notemark.ui.theme.NoteMarkTheme
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
@@ -44,7 +54,29 @@ fun LoginScreen(
     onRegisterClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold { padding ->
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    ObserveAsEvent(SnackBarController.events, snackbarHostState) { event ->
+        scope.launch {
+            when (event.message) {
+                is NetworkError -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.message.toString(context),
+                        duration = SnackbarDuration.Short
+                    )
+                }
+            }
+        }
+    }
+
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        }
+    ) { padding ->
         Box(
             modifier = modifier
                 .fillMaxSize()
@@ -184,7 +216,7 @@ fun LoginScreenPreviewLandscape() {
     NoteMarkTheme {
         LoginScreen(
             isPortrait = false,
-            isTablet = true,
+            isTablet = false,
             email = "",
             password = "",
             onEvent = {},
