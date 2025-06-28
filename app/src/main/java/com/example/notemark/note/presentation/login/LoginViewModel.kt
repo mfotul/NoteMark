@@ -6,8 +6,7 @@ import com.example.notemark.core.domain.util.onError
 import com.example.notemark.core.domain.util.onSuccess
 import com.example.notemark.core.presentation.util.SnackBarController
 import com.example.notemark.core.presentation.util.SnackBarEvent
-import com.example.notemark.note.data.mappers.toKoinBearerToken
-import com.example.notemark.note.domain.NoteMarkDataSource
+import com.example.notemark.note.domain.NoteMarkNetworkDataSource
 import com.example.notemark.note.domain.NoteMarkDataStore
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,8 +15,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val noteMarkDataSource: NoteMarkDataSource,
-    private val noteMarkDataStore: NoteMarkDataStore
+    private val noteMarkDataSource: NoteMarkNetworkDataSource,
+    private val noteMarkDataStore: NoteMarkDataStore,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginState())
@@ -26,11 +25,11 @@ class LoginViewModel(
     private val _isLoggedIn = Channel<Boolean>()
     val isLoggedIn = _isLoggedIn.receiveAsFlow()
 
-    fun onEvent(event: LoginEvent) {
+    fun onEvent(event: LoginAction) {
         when (event) {
-            is LoginEvent.ChangeEmail -> changeEmail(event.email)
-            is LoginEvent.ChangePassword -> changePassword(event.password)
-            LoginEvent.Login -> login()
+            is LoginAction.OnChangeEmail -> changeEmail(event.email)
+            is LoginAction.OnChangePassword -> changePassword(event.password)
+            LoginAction.OnLoginClick -> login()
         }
     }
 
@@ -54,9 +53,8 @@ class LoginViewModel(
             noteMarkDataSource.login(
                 email = state.value.email,
                 password = state.value.password
-            ).onSuccess { tokens ->
-                noteMarkDataStore.update(tokens.toKoinBearerToken())
-                _isLoggedIn.send(true)
+            ).onSuccess { authData ->
+                noteMarkDataStore.update(authData)
             }.onError { error ->
                 SnackBarController.sendEvent(
                     SnackBarEvent(
@@ -67,6 +65,7 @@ class LoginViewModel(
             _state.value = _state.value.copy(
                 isLoading = false
             )
+            _isLoggedIn.send(true)
         }
     }
 }

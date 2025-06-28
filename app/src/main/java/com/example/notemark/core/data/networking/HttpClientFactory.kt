@@ -1,7 +1,9 @@
 package com.example.notemark.core.data.networking
 
 import com.example.notemark.BuildConfig
-import com.example.notemark.core.data.networking.dto.RefreshTokenDto
+import com.example.notemark.core.data.mapper.toBearer
+import com.example.notemark.core.data.networking.dto.RefreshRequestDto
+import com.example.notemark.core.data.networking.dto.RefreshResponseDto
 import com.example.notemark.core.domain.util.Result
 import com.example.notemark.core.domain.util.onSuccess
 import com.example.notemark.note.domain.NoteMarkDataStore
@@ -44,28 +46,28 @@ object HttpClientFactory {
                     loadTokens {
                         val tokenPair = dataStore.get()
                         BearerTokens(
-                            accessToken = tokenPair?.accessToken.orEmpty(),
-                            refreshToken = tokenPair?.refreshToken.orEmpty()
+                            accessToken = tokenPair?.accessToken ?: "",
+                            refreshToken = tokenPair?.refreshToken ?: ""
                         )
                     }
                     refreshTokens {
                         val tokenPair = dataStore.get()
-                        val response = safeCall<BearerTokens> {
-                            client.post(BuildConfig.BASE_URL + "auth/api/refresh") {
+                        val response = safeCall<RefreshResponseDto> {
+                            client.post(constructUrl("/api/auth/refresh")) {
                                 contentType(ContentType.Application.Json)
                                 setBody(
-                                    RefreshTokenDto(
-                                        refreshToken = tokenPair?.refreshToken.orEmpty()
+                                    RefreshRequestDto(
+                                        refreshToken = tokenPair?.refreshToken ?: ""
                                     )
                                 )
-                                markAsRefreshTokenRequest()
                                 header("Debug", true)
+                                markAsRefreshTokenRequest()
                             }
                         }
 
                         if (response is Result.Success) {
                             response.onSuccess { tokens ->
-                                dataStore.update(tokens)
+                                dataStore.updateTokens(tokens.toBearer())
                             }
                             val tokenPair = dataStore.get()
                             BearerTokens(

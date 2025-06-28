@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,20 +32,49 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.notemark.R
-import com.example.notemark.core.domain.util.NetworkError
+import com.example.notemark.core.domain.util.DataError
+import com.example.notemark.core.presentation.designsystem.buttons.NoteButton
+import com.example.notemark.core.presentation.designsystem.text_fields.NoteTextField
+import com.example.notemark.core.presentation.designsystem.theme.NoteMarkTheme
 import com.example.notemark.core.presentation.util.ObserveAsEvent
 import com.example.notemark.core.presentation.util.SnackBarController
 import com.example.notemark.core.presentation.util.toString
 import com.example.notemark.note.presentation.components.LoginRegisterTop
-import com.example.notemark.note.presentation.components.NoteButton
-import com.example.notemark.note.presentation.components.NoteTextField
-import com.example.notemark.ui.theme.NoteMarkTheme
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun LoginScreenRoot(
+    isPortrait: Boolean,
+    isTablet: Boolean,
+    onLogin: () -> Unit,
+    onRegisterClick: () -> Unit,
+) {
+    val viewModel: LoginViewModel = koinViewModel()
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
+
+    ObserveAsEvent(viewModel.isLoggedIn) {
+        if (it) onLogin()
+    }
+
+    LoginScreen(
+        isPortrait = isPortrait,
+        isTablet = isTablet,
+        onRegisterClick = onRegisterClick,
+        email = uiState.email,
+        password = uiState.password,
+        isLoading = uiState.isLoading,
+        onEvent = viewModel::onEvent
+    )
+}
+
 
 @Composable
 fun LoginScreen(
@@ -51,7 +83,7 @@ fun LoginScreen(
     email: String,
     password: String,
     isLoading: Boolean,
-    onEvent: (LoginEvent) -> Unit,
+    onEvent: (LoginAction) -> Unit,
     onRegisterClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -63,7 +95,7 @@ fun LoginScreen(
     ObserveAsEvent(SnackBarController.events, snackbarHostState) { event ->
         scope.launch {
             when (event.message) {
-                is NetworkError -> {
+                is DataError -> {
                     snackbarHostState.showSnackbar(
                         message = event.message.toString(context),
                         duration = SnackbarDuration.Short
@@ -76,13 +108,16 @@ fun LoginScreen(
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackbarHostState)
-        }
+        },
+        modifier = modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets.statusBars
     ) { padding ->
         Box(
             modifier = modifier
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.primary)
                 .padding(padding)
+                .padding(top = 8.dp)
         ) {
             if (isPortrait) {
                 Column(
@@ -144,7 +179,7 @@ fun LoginScreen(
 fun LoginScreenMain(
     email: String,
     password: String,
-    onEvent: (LoginEvent) -> Unit,
+    onEvent: (LoginAction) -> Unit,
     isLoading: Boolean,
     onRegisterClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -155,13 +190,17 @@ fun LoginScreenMain(
             email.isNotEmpty() && password.isNotEmpty()
         }
     }
-    
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Column(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .imePadding()
     ) {
         NoteTextField(
             value = email,
-            onValueChange = { onEvent(LoginEvent.ChangeEmail(it)) },
+            onValueChange = { onEvent(LoginAction.OnChangeEmail(it)) },
             label = stringResource(R.string.email),
             placeholder = stringResource(R.string.jon_doe_email),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
@@ -169,7 +208,7 @@ fun LoginScreenMain(
         Spacer(modifier = Modifier.height(16.dp))
         NoteTextField(
             value = password,
-            onValueChange = { onEvent(LoginEvent.ChangePassword(it)) },
+            onValueChange = { onEvent(LoginAction.OnChangePassword(it)) },
             label = stringResource(R.string.password),
             placeholder = stringResource(R.string.password),
             isPassword = true,
@@ -178,7 +217,10 @@ fun LoginScreenMain(
         Spacer(modifier = Modifier.height(24.dp))
         NoteButton(
             text = stringResource(R.string.log_in),
-            onClick = { onEvent(LoginEvent.Login) },
+            onClick = {
+                keyboardController?.hide()
+                onEvent(LoginAction.OnLoginClick)
+            },
             isLoading = isLoading,
             isEnabled = isLoginButtonEnabled,
             modifier = Modifier.fillMaxWidth()

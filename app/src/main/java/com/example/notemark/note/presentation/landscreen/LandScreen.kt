@@ -26,9 +26,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.notemark.R
-import com.example.notemark.note.presentation.components.NoteButton
-import com.example.notemark.note.presentation.components.NoteOutlinedButton
-import com.example.notemark.ui.theme.NoteMarkTheme
+import com.example.notemark.core.presentation.designsystem.buttons.NoteButton
+import com.example.notemark.core.presentation.designsystem.buttons.NoteOutlinedButton
+import com.example.notemark.core.presentation.designsystem.theme.NoteMarkTheme
 
 @Composable
 fun LandScreen(

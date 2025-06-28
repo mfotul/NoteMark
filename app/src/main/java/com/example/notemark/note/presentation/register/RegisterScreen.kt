@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,27 +32,53 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.notemark.R
-import com.example.notemark.core.domain.util.NetworkError
+import com.example.notemark.core.domain.util.DataError
+import com.example.notemark.core.presentation.designsystem.buttons.NoteButton
+import com.example.notemark.core.presentation.designsystem.text_fields.NoteTextField
+import com.example.notemark.core.presentation.designsystem.theme.NoteMarkTheme
 import com.example.notemark.core.presentation.util.ObserveAsEvent
 import com.example.notemark.core.presentation.util.SnackBarController
 import com.example.notemark.core.presentation.util.toString
 import com.example.notemark.note.presentation.components.LoginRegisterTop
-import com.example.notemark.note.presentation.components.NoteButton
-import com.example.notemark.note.presentation.components.NoteTextField
-import com.example.notemark.ui.theme.NoteMarkTheme
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun RegisterScreenRoot(
+    isPortrait: Boolean,
+    isTablet: Boolean,
+    onRegister: () -> Unit,
+    onLoginClick: () -> Unit,
+) {
+    val viewModel: RegisterViewModel = koinViewModel()
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
+
+    ObserveAsEvent(viewModel.isRegistered) {
+        onRegister()
+    }
+
+    RegisterScreen(
+        onLoginClick = onLoginClick,
+        isPortrait = isPortrait,
+        isTablet = isTablet,
+        uiState = uiState,
+        onEvent = viewModel::onEvent
+    )
+}
 
 @Composable
 fun RegisterScreen(
     isPortrait: Boolean,
     isTablet: Boolean,
     uiState: RegisterState,
-    onEvent: (RegisterEvent) -> Unit,
+    onEvent: (RegisterAction) -> Unit,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -61,7 +90,7 @@ fun RegisterScreen(
     ObserveAsEvent(SnackBarController.events, snackbarHostState) { event ->
         scope.launch {
             when (event.message) {
-                is NetworkError -> {
+                is DataError -> {
                     snackbarHostState.showSnackbar(
                         message = event.message.toString(context),
                         duration = SnackbarDuration.Short
@@ -74,17 +103,21 @@ fun RegisterScreen(
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackbarHostState)
-        }
+        },
+        modifier = modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets.statusBars
     ) { padding ->
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.primary)
                 .padding(padding)
+                .padding(top = 8.dp)
         ) {
             if (isPortrait) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(48.dp),
                     modifier = Modifier
                         .background(
                             color = MaterialTheme.colorScheme.surfaceContainerLowest,
@@ -97,7 +130,6 @@ fun RegisterScreen(
                         title = stringResource(R.string.create_account),
                         isTablet = isTablet
                     )
-                    Spacer(modifier = Modifier.height(48.dp))
                     RegisterScreenMain(
                         onLoginClick = onLoginClick,
                         username = uiState.userName,
@@ -139,7 +171,8 @@ fun RegisterScreen(
                         hasRepeatedPasswordError = uiState.repeatedPasswordHasError,
                         isLoading = uiState.isLoading,
                         onEvent = onEvent,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
                     )
                 }
             }
@@ -158,7 +191,7 @@ fun RegisterScreenMain(
     repeatedPassword: String,
     hasRepeatedPasswordError: Boolean,
     isLoading: Boolean,
-    onEvent: (RegisterEvent) -> Unit,
+    onEvent: (RegisterAction) -> Unit,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -187,14 +220,17 @@ fun RegisterScreenMain(
         }
     }
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Column(
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
+            .imePadding()
     ) {
         NoteTextField(
             value = username,
-            onValueChange = { onEvent(RegisterEvent.ChangeUserName(it)) },
+            onValueChange = { onEvent(RegisterAction.OnChangeUserName(it)) },
             label = stringResource(R.string.username),
             placeholder = stringResource(R.string.jon_doe),
             supportingText = stringResource(R.string.username_supporting_text),
@@ -209,7 +245,7 @@ fun RegisterScreenMain(
         )
         NoteTextField(
             value = email,
-            onValueChange = { onEvent(RegisterEvent.ChangeEmail(it)) },
+            onValueChange = { onEvent(RegisterAction.OnChangeEmail(it)) },
             label = stringResource(R.string.email),
             placeholder = stringResource(R.string.jon_doe_email),
             isError = hasEmailError,
@@ -219,7 +255,7 @@ fun RegisterScreenMain(
         )
         NoteTextField(
             value = password,
-            onValueChange = { onEvent(RegisterEvent.ChangePassword(it)) },
+            onValueChange = { onEvent(RegisterAction.OnChangePassword(it)) },
             label = stringResource(R.string.password),
             placeholder = stringResource(R.string.password),
             supportingText = stringResource(R.string.password_supporting_text),
@@ -231,7 +267,7 @@ fun RegisterScreenMain(
         )
         NoteTextField(
             value = repeatedPassword,
-            onValueChange = { onEvent(RegisterEvent.ChangeRepeatedPassword(it)) },
+            onValueChange = { onEvent(RegisterAction.OnChangeRepeatedPassword(it)) },
             label = stringResource(R.string.repeat_password),
             placeholder = stringResource(R.string.password),
             isError = hasRepeatedPasswordError,
@@ -242,7 +278,10 @@ fun RegisterScreenMain(
         Spacer(modifier = Modifier.height(24.dp))
         NoteButton(
             text = stringResource(R.string.create_account),
-            onClick = { onEvent(RegisterEvent.Register) },
+            onClick = {
+                keyboardController?.hide()
+                onEvent(RegisterAction.OnRegisterClick)
+            },
             isEnabled = isNotEmpty && !hasError,
             isLoading = isLoading,
             modifier = Modifier.fillMaxWidth()

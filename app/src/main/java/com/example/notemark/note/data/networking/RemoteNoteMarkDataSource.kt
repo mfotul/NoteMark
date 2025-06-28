@@ -1,30 +1,40 @@
 package com.example.notemark.note.data.networking
 
-import com.example.notemark.core.data.mapper.toBearerToken
+import com.example.notemark.core.data.mapper.toNote
+import com.example.notemark.core.data.mapper.toNoteDto
+import com.example.notemark.core.data.mapper.toUserPreferences
 import com.example.notemark.core.data.networking.constructUrl
-import com.example.notemark.core.data.networking.dto.BearerTokensDto
 import com.example.notemark.core.data.networking.dto.LoginRequestDto
+import com.example.notemark.core.data.networking.dto.LoginResponseDto
+import com.example.notemark.core.data.networking.dto.NoteDto
+import com.example.notemark.core.data.networking.dto.NotesResponse
 import com.example.notemark.core.data.networking.dto.RegisterRequestDto
 import com.example.notemark.core.data.networking.safeCall
-import com.example.notemark.core.domain.util.NetworkError
+import com.example.notemark.core.domain.util.DataError
 import com.example.notemark.core.domain.util.Result
+import com.example.notemark.core.domain.util.asEmptyDataResult
 import com.example.notemark.core.domain.util.map
-import com.example.notemark.note.domain.BearerTokens
-import com.example.notemark.note.domain.NoteMarkDataSource
+import com.example.notemark.core.domain.util.onError
+import com.example.notemark.note.domain.Note
+import com.example.notemark.note.domain.NoteMarkNetworkDataSource
+import com.example.notemark.note.domain.UserPreferences
 import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
 class RemoteNoteMarkDataSource(
     private val httpClient: HttpClient
-) : NoteMarkDataSource {
+) : NoteMarkNetworkDataSource {
     override suspend fun register(
         username: String,
         email: String,
         password: String
-    ): Result<Unit, NetworkError> {
+    ): Result<Unit, DataError> {
         val request = RegisterRequestDto(
             username = username,
             email = email,
@@ -43,12 +53,12 @@ class RemoteNoteMarkDataSource(
     override suspend fun login(
         email: String,
         password: String
-    ): Result<BearerTokens, NetworkError> {
+    ): Result<UserPreferences, DataError> {
         val request = LoginRequestDto(
             email = email,
             password = password
         )
-        return safeCall<BearerTokensDto> {
+        return safeCall<LoginResponseDto> {
             httpClient.post(
                 urlString = constructUrl("/api/auth/login")
             ) {
@@ -56,7 +66,58 @@ class RemoteNoteMarkDataSource(
                 setBody(request)
             }
         }.map { response ->
-            response.toBearerToken()
+            response.toUserPreferences()
+        }
+    }
+
+    override suspend fun getNotes(page: Int, size: Int): Result<List<Note>, DataError> {
+        return safeCall<NotesResponse> {
+            httpClient.get(
+                urlString = constructUrl("/api/notes")
+            ) {
+                url {
+                    parameters.append("page", page.toString())
+                    parameters.append("size", size.toString())
+                }
+            }
+        }.map { response ->
+            response.notes.map { noteDto ->
+                noteDto.toNote()
+            }
+        }
+    }
+
+    override suspend fun postNote(note: Note): Result<Note, DataError> {
+        return safeCall<NoteDto> {
+            httpClient.post(
+                urlString = constructUrl("/api/notes")
+            ) {
+                contentType(ContentType.Application.Json)
+                setBody(note.toNoteDto())
+            }
+        }.map { noteDto ->
+            noteDto.toNote()
+        }
+    }
+
+    override suspend fun updateNote(note: Note): Result<Note, DataError> {
+        return safeCall<NoteDto> {
+            httpClient.put(
+                urlString = constructUrl("/api/notes")
+            ) {
+                contentType(ContentType.Application.Json)
+                setBody(note.toNoteDto())
+            }
+        }.map {noteDto ->
+            noteDto.toNote()
+        }
+    }
+
+    override suspend fun deleteNote(noteId: String): Result<Unit, DataError> {
+        return safeCall<Unit> {
+            httpClient.delete(
+                urlString = constructUrl("/api/notes/$noteId")
+            )
         }
     }
 }

@@ -7,7 +7,7 @@ import com.example.notemark.core.domain.util.onError
 import com.example.notemark.core.domain.util.onSuccess
 import com.example.notemark.core.presentation.util.SnackBarController
 import com.example.notemark.core.presentation.util.SnackBarEvent
-import com.example.notemark.note.domain.NoteMarkDataSource
+import com.example.notemark.note.domain.NoteMarkNetworkDataSource
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(
-    private val noteMarkDataSource: NoteMarkDataSource,
+    private val noteMarkDataSource: NoteMarkNetworkDataSource,
 ) : ViewModel() {
     private val _state = MutableStateFlow(RegisterState())
     val state = _state.asStateFlow()
@@ -23,13 +23,13 @@ class RegisterViewModel(
     private val _isRegistered = Channel<Boolean>()
     val isRegistered = _isRegistered.receiveAsFlow()
 
-    fun onEvent(event: RegisterEvent) {
+    fun onEvent(event: RegisterAction) {
         when (event) {
-            is RegisterEvent.ChangeEmail -> changeEmail(event.email)
-            is RegisterEvent.ChangePassword -> changePassword(event.password)
-            is RegisterEvent.ChangeRepeatedPassword -> changeRepeatedPassword(event.repeatedPassword)
-            is RegisterEvent.ChangeUserName -> changeUserName(event.username)
-            RegisterEvent.Register -> register()
+            is RegisterAction.OnChangeEmail -> changeEmail(event.email)
+            is RegisterAction.OnChangePassword -> changePassword(event.password)
+            is RegisterAction.OnChangeRepeatedPassword -> changeRepeatedPassword(event.repeatedPassword)
+            is RegisterAction.OnChangeUserName -> changeUserName(event.username)
+            RegisterAction.OnRegisterClick -> register()
         }
     }
 
