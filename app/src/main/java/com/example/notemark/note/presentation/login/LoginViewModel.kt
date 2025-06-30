@@ -55,6 +55,7 @@ class LoginViewModel(
                 password = state.value.password
             ).onSuccess { authData ->
                 noteMarkDataStore.update(authData)
+                _isLoggedIn.send(true)
             }.onError { error ->
                 SnackBarController.sendEvent(
                     SnackBarEvent(
@@ -65,7 +66,6 @@ class LoginViewModel(
             _state.value = _state.value.copy(
                 isLoading = false
             )
-            _isLoggedIn.send(true)
         }
     }
 }
