@@ -2,21 +2,17 @@
 
 package com.example.notemark.note.presentation.list
 
-import android.view.Window
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -46,8 +42,8 @@ import com.example.notemark.core.presentation.util.ObserveAsEvent
 import com.example.notemark.core.presentation.util.SnackBarController
 import com.example.notemark.core.presentation.util.toString
 import com.example.notemark.note.domain.Note
-import com.example.notemark.note.presentation.list.components.NoteCard
 import com.example.notemark.note.presentation.components.NoteConfirmationDialog
+import com.example.notemark.note.presentation.list.components.NoteCard
 import com.example.notemark.note.presentation.list.components.NoteEmptyList
 import com.example.notemark.note.presentation.list.components.NoteFloatingActionButton
 import com.example.notemark.note.presentation.list.components.NoteTopAppBar
