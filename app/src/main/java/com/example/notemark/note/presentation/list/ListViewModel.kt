@@ -11,8 +11,8 @@ import com.example.notemark.note.domain.NoteMarkRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -30,11 +30,16 @@ class ListViewModel(
     private var eventsChannel = Channel<ListEvent>()
     val events = eventsChannel.receiveAsFlow()
 
+    private val notes = noteMarkRepository.getAllNotes()
+    private val settings = noteMarkDataStore.getSettings()
+
     private var _state = MutableStateFlow(ListState())
     val state = _state
         .onStart {
-            if (!hasLoadedInitialData)
-                loadNotes()
+            if (!hasLoadedInitialData) {
+                observeNotesAndSettings()
+            syncNotes()
+                }
             hasLoadedInitialData = true
         }
         .stateIn(
@@ -45,12 +50,12 @@ class ListViewModel(
 
     fun onAction(action: ListAction) {
         when (action) {
-            ListAction.OnReload -> loadNotes()
+            ListAction.OnReload -> {}//loadNotes()
             ListAction.OnFabClick -> addNote()
             is ListAction.OnNoteLongClick -> showDialog(action.note)
             ListAction.OnDeleteClick -> deleteNote()
             ListAction.OnDialogCancel -> hideDialog()
-
+            ListAction.OnSettingsClick -> {}
         }
     }
 
@@ -129,23 +134,37 @@ class ListViewModel(
         }
     }
 
-    private fun loadNotes() {
+    private fun observeNotesAndSettings() {
+        combine(_state, notes, settings) { state, notes, settings ->
+            _state.update {
+                it.copy(
+                    notes = notes,
+                    userInitials = nameInitials(settings?.userName ?: ""),
+                )
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun syncNotes() {
         _state.update {
             it.copy(
                 isLoading = true
             )
         }
-        noteMarkRepository.getAllNotes().onEach { notes ->
-            _state.update {
-                it.copy(
-                    notes = notes,
-                    isLoading = false,
-                    userInitials = nameInitials(
-                        fullName = noteMarkDataStore.get()?.userName ?: ""
+        viewModelScope.launch {
+            noteMarkRepository.syncNotes().onError { error ->
+                SnackBarController.sendEvent(
+                    SnackBarEvent(
+                        message = error
                     )
                 )
             }
-        }.launchIn(viewModelScope)
+        }
+        _state.update {
+            it.copy(
+                isLoading = false
+            )
+        }
     }
 
     private fun nameInitials(fullName: String): String {

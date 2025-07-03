@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -102,7 +103,10 @@ fun RegisterScreen(
 
     Scaffold(
         snackbarHost = {
-            SnackbarHost(snackbarHostState)
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.safeContentPadding()
+            )
         },
         modifier = modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets.statusBars

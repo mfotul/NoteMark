@@ -1,7 +1,7 @@
-package com.example.notemark.core.database.di
+package com.example.notemark.core.data.database.di
 
 import androidx.room.Room
-import com.example.notemark.core.database.NoteMarkDatabase
+import com.example.notemark.core.data.database.NoteMarkDatabase
 import com.example.notemark.note.data.database.RoomNoteMarkDataSource
 import com.example.notemark.note.domain.NoteMarkLocalDataSource
 import org.koin.android.ext.koin.androidApplication

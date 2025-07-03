@@ -2,15 +2,20 @@
 
 package com.example.notemark.note.presentation.list
 
+import android.view.Window
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -58,6 +63,7 @@ fun ListScreenRoot(
     isTablet: Boolean,
     onNoteClick: (String) -> Unit,
     onNotePosted: (newId: String) -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     val viewModel: ListViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -76,7 +82,13 @@ fun ListScreenRoot(
         noteList = state.notes,
         showConfirmationDialog = state.showConfirmationDialog,
         onNoteClick = onNoteClick,
-        onAction = viewModel::onAction
+        onAction = { action ->
+            when (action) {
+                is ListAction.OnSettingsClick -> onSettingsClick()
+                else -> Unit
+            }
+            viewModel.onAction(action)
+        }
     )
 }
 
@@ -96,6 +108,7 @@ fun ListScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
+
     ObserveAsEvent(SnackBarController.events, snackbarHostState) { event ->
         scope.launch {
             when (event.message) {
@@ -112,23 +125,20 @@ fun ListScreen(
     Scaffold(
         topBar = {
             NoteTopAppBar(
-                userInitials = userInitials
+                userInitials = userInitials,
+                onSettingsClick = { onAction(ListAction.OnSettingsClick) }
             )
         },
         floatingActionButton = {
-            val fabModifier = if (isPortrait)
-                Modifier
-            else
-                Modifier.padding(end = 50.dp)
             NoteFloatingActionButton(
                 onClick = { onAction(ListAction.OnFabClick) },
-                modifier = fabModifier
+                modifier = Modifier.safeContentPadding()
             )
         },
         snackbarHost = {
             SnackbarHost(snackbarHostState)
         },
-        contentWindowInsets = WindowInsets.systemBars,
+        contentWindowInsets = WindowInsets.statusBars,
         modifier = modifier
             .fillMaxSize()
     ) { innerPadding ->

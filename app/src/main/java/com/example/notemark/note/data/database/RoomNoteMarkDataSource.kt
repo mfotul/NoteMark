@@ -1,6 +1,6 @@
 package com.example.notemark.note.data.database
 
-import com.example.notemark.core.database.notemark.NoteMarkDao
+import com.example.notemark.core.data.database.notemark.NoteMarkDao
 import com.example.notemark.core.domain.util.EmptyResult
 import com.example.notemark.core.domain.util.DataError
 import com.example.notemark.core.domain.util.Result
@@ -31,12 +31,25 @@ class RoomNoteMarkDataSource(
     }
 
     override suspend fun upsertNote(note: Note): EmptyResult<DataError> {
-        noteMarkDao.upsert(note.toNoteMarkEntity())
+        try {
+            noteMarkDao.upsert(note.toNoteMarkEntity())
+        } catch (_: Exception) {
+            return Result.Error(DataError.DATABASE_ERROR)
+        }
         return Result.Success(Unit)
     }
 
     override suspend fun deleteNote(note: Note): EmptyResult<DataError> {
         val result = noteMarkDao.delete(note.toNoteMarkEntity())
         return if (result == 1) Result.Success(Unit) else Result.Error(DataError.DATABASE_ERROR)
+    }
+
+    override suspend fun deleteAllNotes(): EmptyResult<DataError> {
+        try {
+            noteMarkDao.deleteAllNotes()
+        } catch (_: Exception) {
+            return Result.Error(DataError.DATABASE_ERROR)
+        }
+        return Result.Success(Unit)
     }
 }

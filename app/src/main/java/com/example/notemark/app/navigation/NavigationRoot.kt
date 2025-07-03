@@ -1,4 +1,4 @@
-package com.example.notemark.core.navigation
+package com.example.notemark.app.navigation
 
 import android.content.res.Configuration
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -17,7 +17,8 @@ import com.example.notemark.note.presentation.landscreen.LandScreen
 import com.example.notemark.note.presentation.list.ListScreenRoot
 import com.example.notemark.note.presentation.login.LoginScreenRoot
 import com.example.notemark.note.presentation.register.RegisterScreenRoot
-import com.example.notemark.note.presentation.util.getInsetController
+import com.example.notemark.app.util.getInsetController
+import com.example.notemark.note.presentation.settings.SettingsScreenRoot
 
 @Composable
 fun NavigationRoot() {
@@ -119,6 +120,9 @@ fun NavigationRoot() {
                 },
                 onNotePosted = { id ->
                     navController.navigate(NavigationRoute.Edit(id))
+                },
+                onSettingsClick = {
+                    navController.navigate(NavigationRoute.Settings)
                 }
             )
         }
@@ -128,6 +132,20 @@ fun NavigationRoot() {
                 isTablet = isTablet,
                 onBack = {
                     navController.popBackStack()
+                }
+            )
+        }
+        composable<NavigationRoute.Settings> {
+            SettingsScreenRoot(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onLogOut = {
+                    navController.navigate(NavigationRoute.Login) {
+                        popUpTo(NavigationRoute.Settings) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

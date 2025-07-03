@@ -14,7 +14,7 @@ android {
     defaultConfig {
         applicationId = "com.example.notemark"
         minSdk = 31
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -50,10 +50,6 @@ android {
         buildConfig = true
     }
 }
-
-//configurations.implementation {
-//    exclude(group = "com.intellij", module = "annotations")
-//}
 
 room {
     schemaDirectory("$projectDir/schemas")

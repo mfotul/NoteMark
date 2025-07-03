@@ -12,19 +12,14 @@ import com.example.notemark.note.domain.NoteMarkRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 
 class NoteMarkRepositoryImpl(
     private val noteMarkLocalDataSource: NoteMarkLocalDataSource,
     private val noteMarkNetworkDataSource: NoteMarkNetworkDataSource,
     private val applicationScope: CoroutineScope
-): NoteMarkRepository {
+) : NoteMarkRepository {
+
     override fun getAllNotes(): Flow<List<Note>> {
-        applicationScope.launch {
-            noteMarkNetworkDataSource.getNotes(0, 20).onSuccess { notes ->
-                notes.forEach { noteMarkLocalDataSource.upsertNote(it) }
-            }
-        }
         return noteMarkLocalDataSource.getAllNotes()
     }
 
@@ -32,6 +27,17 @@ class NoteMarkRepositoryImpl(
         return noteMarkLocalDataSource.getNoteById(noteId)
     }
 
+    override suspend fun syncNotes(): EmptyResult<DataError> {
+        return applicationScope.async {
+            val result = noteMarkNetworkDataSource.getNotes()
+                .onSuccess { notes ->
+                    notes.forEach { noteMarkLocalDataSource.upsertNote(it) }
+                }
+            if (result is Result.Error)
+                return@async result
+            return@async result.asEmptyDataResult()
+        }.await()
+    }
     override suspend fun insertNote(note: Note): EmptyResult<DataError> {
         val localResult = noteMarkLocalDataSource.upsertNote(note)
         if (localResult !is Result.Success)
@@ -68,5 +74,18 @@ class NoteMarkRepositoryImpl(
                 return@async remoteResult
             return@async remoteResult.asEmptyDataResult()
         }.await()
+    }
+
+    override suspend fun logoutUser(refreshToken: String): EmptyResult<DataError> {
+        val localResult = noteMarkLocalDataSource.deleteAllNotes()
+        if (localResult !is Result.Success)
+            return localResult
+        return applicationScope.async {
+            val remoteResult = noteMarkNetworkDataSource.logout(refreshToken)
+            if (remoteResult is Result.Error)
+                return@async remoteResult
+            return@async remoteResult.asEmptyDataResult()
+        }.await()
+
     }
 }

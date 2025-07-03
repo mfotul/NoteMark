@@ -24,6 +24,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.json.Json
 
 
@@ -44,14 +45,14 @@ object HttpClientFactory {
             install(Auth) {
                 bearer {
                     loadTokens {
-                        val tokenPair = dataStore.get()
+                        val tokenPair = dataStore.getSettings().firstOrNull()
                         BearerTokens(
                             accessToken = tokenPair?.accessToken ?: "",
                             refreshToken = tokenPair?.refreshToken ?: ""
                         )
                     }
                     refreshTokens {
-                        val tokenPair = dataStore.get()
+                        val tokenPair = dataStore.getSettings().firstOrNull()
                         val response = safeCall<RefreshResponseDto> {
                             client.post(constructUrl("/api/auth/refresh")) {
                                 contentType(ContentType.Application.Json)
@@ -69,7 +70,7 @@ object HttpClientFactory {
                             response.onSuccess { tokens ->
                                 dataStore.updateTokens(tokens.toBearer())
                             }
-                            val tokenPair = dataStore.get()
+                            val tokenPair = dataStore.getSettings().firstOrNull()
                             BearerTokens(
                                 accessToken = tokenPair?.accessToken.orEmpty(),
                                 refreshToken = tokenPair?.refreshToken.orEmpty()

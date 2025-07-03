@@ -1,4 +1,4 @@
-package com.example.notemark.core.database.notemark
+package com.example.notemark.core.data.database.notemark
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

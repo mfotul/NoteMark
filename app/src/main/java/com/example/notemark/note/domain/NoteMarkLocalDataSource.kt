@@ -9,4 +9,5 @@ interface NoteMarkLocalDataSource {
     fun getNoteById(noteId: String): Flow<Note>
     suspend fun upsertNote(note: Note): EmptyResult<DataError>
     suspend fun deleteNote(note: Note): EmptyResult<DataError>
+    suspend fun deleteAllNotes(): EmptyResult<DataError>
 }

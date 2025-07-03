@@ -1,6 +1,6 @@
 package com.example.notemark.note.data.database
 
-import com.example.notemark.core.database.notemark.NoteMarkEntity
+import com.example.notemark.core.data.database.notemark.NoteMarkEntity
 import com.example.notemark.note.domain.Note
 import java.time.Instant
 

@@ -8,4 +8,5 @@ sealed interface ListAction {
     data object OnDialogCancel: ListAction
     data object OnDeleteClick: ListAction
     data class OnNoteLongClick(val note: Note): ListAction
+    data object OnSettingsClick: ListAction
 }

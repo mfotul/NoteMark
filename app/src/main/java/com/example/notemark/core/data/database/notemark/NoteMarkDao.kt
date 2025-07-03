@@ -1,4 +1,4 @@
-package com.example.notemark.core.database.notemark
+package com.example.notemark.core.data.database.notemark
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -19,4 +19,7 @@ interface NoteMarkDao {
 
     @Upsert
     suspend fun upsert(noteMarkEntity: NoteMarkEntity)
+
+    @Query("DELETE FROM notemarkentity")
+    suspend fun deleteAllNotes()
 }

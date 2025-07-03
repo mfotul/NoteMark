@@ -8,16 +8,15 @@ import com.example.notemark.core.data.networking.dto.LoginRequestDto
 import com.example.notemark.core.data.networking.dto.LoginResponseDto
 import com.example.notemark.core.data.networking.dto.NoteDto
 import com.example.notemark.core.data.networking.dto.NotesResponse
+import com.example.notemark.core.data.networking.dto.RefreshRequestDto
 import com.example.notemark.core.data.networking.dto.RegisterRequestDto
 import com.example.notemark.core.data.networking.safeCall
 import com.example.notemark.core.domain.util.DataError
 import com.example.notemark.core.domain.util.Result
-import com.example.notemark.core.domain.util.asEmptyDataResult
 import com.example.notemark.core.domain.util.map
-import com.example.notemark.core.domain.util.onError
 import com.example.notemark.note.domain.Note
 import com.example.notemark.note.domain.NoteMarkNetworkDataSource
-import com.example.notemark.note.domain.UserPreferences
+import com.example.notemark.note.domain.DataStoreSettings
 import io.ktor.client.HttpClient
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
@@ -53,7 +52,7 @@ class RemoteNoteMarkDataSource(
     override suspend fun login(
         email: String,
         password: String
-    ): Result<UserPreferences, DataError> {
+    ): Result<DataStoreSettings, DataError> {
         val request = LoginRequestDto(
             email = email,
             password = password
@@ -70,16 +69,11 @@ class RemoteNoteMarkDataSource(
         }
     }
 
-    override suspend fun getNotes(page: Int, size: Int): Result<List<Note>, DataError> {
+    override suspend fun getNotes(): Result<List<Note>, DataError> {
         return safeCall<NotesResponse> {
             httpClient.get(
-                urlString = constructUrl("/api/notes")
-            ) {
-                url {
-                    parameters.append("page", page.toString())
-                    parameters.append("size", size.toString())
-                }
-            }
+                urlString = constructUrl("/api/notes?page=-1")
+            )
         }.map { response ->
             response.notes.map { noteDto ->
                 noteDto.toNote()
@@ -118,6 +112,17 @@ class RemoteNoteMarkDataSource(
             httpClient.delete(
                 urlString = constructUrl("/api/notes/$noteId")
             )
+        }
+    }
+
+    override suspend fun logout(refreshToken: String): Result<Unit, DataError> {
+        return safeCall<Unit> {
+            httpClient.post(
+                urlString = constructUrl("/api/auth/logout")
+            ) {
+                contentType(ContentType.Application.Json)
+                setBody(RefreshRequestDto(refreshToken))
+            }
         }
     }
 }

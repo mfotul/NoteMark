@@ -1,9 +1,9 @@
-package com.example.notemark.core.database
+package com.example.notemark.core.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.notemark.core.database.notemark.NoteMarkDao
-import com.example.notemark.core.database.notemark.NoteMarkEntity
+import com.example.notemark.core.data.database.notemark.NoteMarkDao
+import com.example.notemark.core.data.database.notemark.NoteMarkEntity
 
 @Database(
     entities = [NoteMarkEntity::class],

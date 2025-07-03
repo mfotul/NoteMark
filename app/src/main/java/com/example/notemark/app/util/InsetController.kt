@@ -1,4 +1,4 @@
-package com.example.notemark.note.presentation.util
+package com.example.notemark.app.util
 
 import android.app.Activity
 import androidx.compose.runtime.Composable

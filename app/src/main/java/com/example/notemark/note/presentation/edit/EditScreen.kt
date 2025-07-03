@@ -1,5 +1,6 @@
 package com.example.notemark.note.presentation.edit
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -119,6 +120,10 @@ fun EditScreen(
         }
     }
 
+    BackHandler {
+        onAction(EditAction.OnCloseClicked)
+    }
+
     Scaffold(
         topBar = {
             NoteEditTopAppBar(
@@ -158,10 +163,7 @@ fun EditScreen(
                         else
                             Modifier.fillMaxWidth()
                     )
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 16.dp
-                    )
+                    .padding(16.dp)
 
                     .align(Alignment.TopCenter)
                     .imePadding()

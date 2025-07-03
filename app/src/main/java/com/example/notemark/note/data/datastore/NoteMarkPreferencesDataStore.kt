@@ -2,20 +2,19 @@ package com.example.notemark.note.data.datastore
 
 import androidx.datastore.core.DataStore
 import com.example.notemark.note.domain.NoteMarkDataStore
-import com.example.notemark.note.domain.UserPreferences
+import com.example.notemark.note.domain.DataStoreSettings
 import io.ktor.client.plugins.auth.providers.BearerTokens
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.Flow
 
 class NoteMarkPreferencesDataStore(
-    private val preferencesDataStore: DataStore<UserPreferences>
+    private val preferencesDataStore: DataStore<DataStoreSettings>
 ) : NoteMarkDataStore {
-    val userPreferences = preferencesDataStore.data
 
-    override suspend fun get(): UserPreferences? {
-        return userPreferences.firstOrNull()
+    override fun getSettings(): Flow<DataStoreSettings?> {
+        return preferencesDataStore.data
     }
 
-    override suspend fun update(response: UserPreferences) {
+    override suspend fun update(response: DataStoreSettings) {
         preferencesDataStore.updateData { preferences ->
             preferences.copy(
                 accessToken = response.accessToken,
@@ -31,6 +30,12 @@ class NoteMarkPreferencesDataStore(
                 accessToken = tokens.accessToken,
                 refreshToken = tokens.refreshToken
             )
+        }
+    }
+
+    override suspend fun clear() {
+        preferencesDataStore.updateData {
+            DataStoreSettings()
         }
     }
 }

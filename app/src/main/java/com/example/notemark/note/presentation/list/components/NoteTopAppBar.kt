@@ -4,14 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.displayCutout
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -31,24 +32,33 @@ import com.example.notemark.core.presentation.designsystem.theme.NoteMarkTheme
 @Composable
 fun NoteTopAppBar(
     userInitials: String,
+    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     TopAppBar(
         title = {
+            Text(
+                text = stringResource(R.string.app_name),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+            )
+        },
+        actions = {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = modifier
-                    .background(color = MaterialTheme.colorScheme.surfaceContainerLowest)
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, end = 16.dp)
-                    .windowInsetsPadding(WindowInsets.displayCutout)
+                    .width(90.dp)
+
             ) {
-                Text(
-                    text = stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
+                IconButton(
+                    onClick = onSettingsClick
+                ){
+                    Icon(
+                        imageVector = Icons.Outlined.Settings,
+                        contentDescription = stringResource(R.string.settings)
+                    )
+                }
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
@@ -70,6 +80,7 @@ fun NoteTopAppBar(
         ),
         modifier = modifier
             .background(color = MaterialTheme.colorScheme.surfaceContainerLowest)
+            .padding(end = 16.dp)
     )
 
 }
@@ -79,7 +90,8 @@ fun NoteTopAppBar(
 fun NoteTopAppBarPreview() {
     NoteMarkTheme {
         NoteTopAppBar(
-            userInitials = "MF"
+            userInitials = "MF",
+            onSettingsClick = {}
         )
     }
 }

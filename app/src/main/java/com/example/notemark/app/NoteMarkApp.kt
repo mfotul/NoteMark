@@ -1,9 +1,9 @@
-package com.example.notemark
+package com.example.notemark.app
 
 import android.app.Application
 import com.example.notemark.core.data.networking.di.networkModule
-import com.example.notemark.core.database.di.databaseModule
-import com.example.notemark.di.appModule
+import com.example.notemark.core.data.database.di.databaseModule
+import com.example.notemark.app.di.appModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

@@ -1,4 +1,4 @@
-package com.example.notemark.core.navigation
+package com.example.notemark.app.navigation
 
 import kotlinx.serialization.Serializable
 
@@ -17,4 +17,8 @@ sealed interface NavigationRoute {
 
     @Serializable
     data class Edit(val id: String): NavigationRoute
+
+    @Serializable
+    data object Settings: NavigationRoute
+
 }

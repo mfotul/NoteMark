@@ -14,13 +14,15 @@ interface NoteMarkNetworkDataSource {
     suspend fun login(
         email: String,
         password: String
-    ): Result<UserPreferences, DataError>
+    ): Result<DataStoreSettings, DataError>
 
-    suspend fun getNotes(page: Int, size: Int): Result<List<Note>, DataError>
+    suspend fun getNotes(): Result<List<Note>, DataError>
 
     suspend fun postNote(note: Note): Result<Note, DataError>
 
     suspend fun updateNote(note: Note): Result<Note, DataError>
 
     suspend fun deleteNote(noteId: String): Result<Unit, DataError>
+
+    suspend fun logout(refreshToken: String): Result<Unit, DataError>
 }
