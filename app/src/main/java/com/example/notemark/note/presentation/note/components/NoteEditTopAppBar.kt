@@ -1,4 +1,4 @@
-package com.example.notemark.note.presentation.edit.components
+package com.example.notemark.note.presentation.note.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,49 +40,66 @@ fun NoteEditTopAppBar(
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
+
 
     TopAppBar(
         title = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
+            EditTopAppBar(
+                onCloseClick = onCloseClick,
+                onSaveClick = onSaveClick,
                 modifier = modifier
-                    .fillMaxWidth()
-                    .background(Color.Transparent)
-                    .padding(end = 16.dp)
-                    .windowInsetsPadding(WindowInsets.displayCutout)
-            ) {
-                IconButton(onClick = {
-                    keyboardController?.hide()
-                    onCloseClick()
-                }) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = stringResource(R.string.close),
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-                Text(
-                    text = stringResource(R.string.save_note).uppercase(),
-                    fontFamily = SpaceGrotesk,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    lineHeight = 24.sp,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable(
-                        onClick = {
-                            keyboardController?.hide()
-                            onSaveClick()
-                        }
-                    )
-                )
-            }
+            )
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+            containerColor = Color.Transparent,
         )
     )
+}
+
+@Composable
+fun EditTopAppBar(
+    onCloseClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Color.Transparent)
+            .padding(end = 16.dp)
+            .windowInsetsPadding(WindowInsets.displayCutout)
+    ) {
+        IconButton(
+            onClick = {
+                keyboardController?.hide()
+                onCloseClick()
+            },
+            modifier = Modifier
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Close,
+                contentDescription = stringResource(R.string.close),
+                modifier = Modifier.size(20.dp)
+            )
+        }
+        Text(
+            text = stringResource(R.string.save_note).uppercase(),
+            fontFamily = SpaceGrotesk,
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.clickable(
+                onClick = {
+                    keyboardController?.hide()
+                    onSaveClick()
+                }
+            )
+        )
+    }
 }
 
 @Composable

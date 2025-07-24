@@ -45,7 +45,7 @@ fun NoteCard(
                 .padding(16.dp),
         ) {
             Text(
-                text = note.createdAtFormatted,
+                text = note.createdAtDate,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary
             )

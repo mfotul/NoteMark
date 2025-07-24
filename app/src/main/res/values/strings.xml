@@ -51,4 +51,8 @@
     <string name="settings">Settings</string>
     <string name="back">Back</string>
     <string name="log_out">Log out</string>
+    <string name="all_notes">ALL NOTES</string>
+    <string name="edit_mode">Edit Mode</string>
+    <string name="view_mode">View Mode</string>
+    <string name="just_now">Just now</string>
 </resources>

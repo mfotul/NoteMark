@@ -76,3 +76,13 @@ val Typography.titleXLarge: TextStyle
         lineHeight = 40.sp,
         color = onSurface
     )
+
+val Typography.titleXSmall: TextStyle
+get() = TextStyle(
+    fontFamily = SpaceGrotesk,
+    fontWeight = FontWeight.Bold,
+    fontSize = 16.sp,
+    lineHeight = 24.sp,
+    letterSpacing = 0.1.sp,
+    color = onSurfaceVariant
+)

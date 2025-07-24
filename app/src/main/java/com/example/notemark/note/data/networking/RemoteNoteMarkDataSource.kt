@@ -20,6 +20,7 @@ import com.example.notemark.note.domain.DataStoreSettings
 import io.ktor.client.HttpClient
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
@@ -72,8 +73,10 @@ class RemoteNoteMarkDataSource(
     override suspend fun getNotes(): Result<List<Note>, DataError> {
         return safeCall<NotesResponse> {
             httpClient.get(
-                urlString = constructUrl("/api/notes?page=-1")
-            )
+                urlString = constructUrl("/api/notes")
+            ) {
+                parameter("page", -1)
+            }
         }.map { response ->
             response.notes.map { noteDto ->
                 noteDto.toNote()

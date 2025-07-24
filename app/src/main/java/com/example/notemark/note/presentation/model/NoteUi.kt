@@ -13,8 +13,9 @@ data class NoteUi(
     val createdAt: Instant,
     val lastEditedAt: Instant,
 ) {
-    val createdAtFormatted = createdAt.toNoteUiDate()
-    val lastEditedAtFormatted = lastEditedAt.toNoteUiDate()
+    val createdAtDate = createdAt.toNoteUiDate()
+    val createdAtDateTime = createdAt.toNoteUiDateTime()
+    val lastEditedAtDateTime = lastEditedAt.toNoteUiDateTime()
 }
 
 fun Note.toNoteUi() = NoteUi(
@@ -34,4 +35,10 @@ fun Instant.toNoteUiDate(): String {
     val formatter = DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)
 
     return zonedDateTime.format(formatter)
+}
+
+fun Instant.toNoteUiDateTime(): String {
+    val pattern = "dd MMM yyyy, HH:mm"
+    val formatter = DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)
+    return this.atZone(ZoneId.systemDefault()).format(formatter)
 }

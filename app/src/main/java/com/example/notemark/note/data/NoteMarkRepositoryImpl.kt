@@ -31,6 +31,7 @@ class NoteMarkRepositoryImpl(
         return applicationScope.async {
             val result = noteMarkNetworkDataSource.getNotes()
                 .onSuccess { notes ->
+                    println("syncNotes: $notes")
                     notes.forEach { noteMarkLocalDataSource.upsertNote(it) }
                 }
             if (result is Result.Error)

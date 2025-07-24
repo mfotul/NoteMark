@@ -12,7 +12,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -34,19 +33,21 @@ class ListViewModel(
     private val settings = noteMarkDataStore.getSettings()
 
     private var _state = MutableStateFlow(ListState())
-    val state = _state
-        .onStart {
-            if (!hasLoadedInitialData) {
-                observeNotesAndSettings()
-            syncNotes()
-                }
-            hasLoadedInitialData = true
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = ListState()
+    val state = combine(_state, notes, settings) { state, notes, settings ->
+        state.copy(
+            notes = notes,
+            userInitials = nameInitials(settings?.userName ?: ""),
         )
+    }.onStart {
+        if (!hasLoadedInitialData) {
+            syncNotes()
+        }
+        hasLoadedInitialData = true
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000L),
+        initialValue = ListState()
+    )
 
     fun onAction(action: ListAction) {
         when (action) {
@@ -134,17 +135,6 @@ class ListViewModel(
         }
     }
 
-    private fun observeNotesAndSettings() {
-        combine(_state, notes, settings) { state, notes, settings ->
-            _state.update {
-                it.copy(
-                    notes = notes,
-                    userInitials = nameInitials(settings?.userName ?: ""),
-                )
-            }
-        }.launchIn(viewModelScope)
-    }
-
     private fun syncNotes() {
         _state.update {
             it.copy(
@@ -152,18 +142,19 @@ class ListViewModel(
             )
         }
         viewModelScope.launch {
-            noteMarkRepository.syncNotes().onError { error ->
-                SnackBarController.sendEvent(
-                    SnackBarEvent(
-                        message = error
+            noteMarkRepository.syncNotes()
+                .onError { error ->
+                    SnackBarController.sendEvent(
+                        SnackBarEvent(
+                            message = error
+                        )
                     )
+                }
+            _state.update {
+                it.copy(
+                    isLoading = false
                 )
             }
-        }
-        _state.update {
-            it.copy(
-                isLoading = false
-            )
         }
     }
 

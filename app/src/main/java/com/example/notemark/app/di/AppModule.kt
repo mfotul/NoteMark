@@ -9,7 +9,7 @@ import com.example.notemark.note.data.NoteMarkRepositoryImpl
 import com.example.notemark.note.data.datastore.NoteMarkPreferencesDataStore
 import com.example.notemark.note.domain.NoteMarkDataStore
 import com.example.notemark.note.domain.NoteMarkRepository
-import com.example.notemark.note.presentation.edit.EditViewModel
+import com.example.notemark.note.presentation.note.NoteViewModel
 import com.example.notemark.note.presentation.list.ListViewModel
 import com.example.notemark.note.presentation.login.LoginViewModel
 import com.example.notemark.note.presentation.register.RegisterViewModel
@@ -37,6 +37,6 @@ val appModule = module {
     viewModelOf(::RegisterViewModel)
     viewModelOf(::LoginViewModel)
     viewModelOf(::ListViewModel)
-    viewModelOf(::EditViewModel)
+    viewModelOf(::NoteViewModel)
     viewModelOf(::SettingsViewModel)
 }

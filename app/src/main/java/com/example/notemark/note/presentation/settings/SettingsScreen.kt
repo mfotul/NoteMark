@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -63,14 +64,17 @@ fun SettingsScreen(
         Column(
             modifier = modifier
                 .padding(innerPadding)
-                .padding(24.dp)
+                .padding(8.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.clickable {
-                    onAction(SettingsAction.OnLogOutClick)
-                }
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        onAction(SettingsAction.OnLogOutClick)
+                    }
+                    .padding(8.dp)
             ) {
                 Image(
                     imageVector = ImageVector.vectorResource(R.drawable.log_out),

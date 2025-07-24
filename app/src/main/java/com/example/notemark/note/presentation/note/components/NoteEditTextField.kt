@@ -1,4 +1,4 @@
-package com.example.notemark.note.presentation.edit.components
+package com.example.notemark.note.presentation.note.components
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextField

@@ -16,9 +16,8 @@ sealed interface NavigationRoute {
     data object List: NavigationRoute
 
     @Serializable
-    data class Edit(val id: String): NavigationRoute
+    data class Edit(val id: String, val fabClick: Boolean = false): NavigationRoute
 
     @Serializable
     data object Settings: NavigationRoute
-
 }

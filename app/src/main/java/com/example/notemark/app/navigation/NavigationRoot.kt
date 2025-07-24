@@ -12,7 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.window.core.layout.WindowHeightSizeClass
-import com.example.notemark.note.presentation.edit.EditScreenRoot
+import com.example.notemark.note.presentation.note.NoteScreenRoot
 import com.example.notemark.note.presentation.landscreen.LandScreen
 import com.example.notemark.note.presentation.list.ListScreenRoot
 import com.example.notemark.note.presentation.login.LoginScreenRoot
@@ -36,16 +36,12 @@ fun NavigationRoot() {
             LandScreen(
                 onRegisterClick = {
                     navController.navigate(NavigationRoute.Register) {
-                        popUpTo(NavigationRoute.Landing) {
-                            inclusive = true
-                        }
+                        popUpTo(NavigationRoute.Landing) { inclusive = true }
                     }
                 },
                 onLoginClick = {
                     navController.navigate(NavigationRoute.Login) {
-                        popUpTo(NavigationRoute.Landing) {
-                            inclusive = true
-                        }
+                        popUpTo(NavigationRoute.Landing) { inclusive = true }
                     }
                 },
                 isPortrait = isPortrait,
@@ -64,16 +60,12 @@ fun NavigationRoot() {
                 isTablet = isTablet,
                 onRegister = {
                     navController.navigate(NavigationRoute.Login) {
-                        popUpTo(NavigationRoute.Register) {
-                            inclusive = true
-                        }
+                        popUpTo(NavigationRoute.Register) { inclusive = true }
                     }
                 },
                 onLoginClick = {
                     navController.navigate(NavigationRoute.Login) {
-                        popUpTo(NavigationRoute.Register) {
-                            inclusive = true
-                        }
+                        popUpTo(NavigationRoute.Register) { inclusive = true }
                     }
                 }
             )
@@ -91,16 +83,12 @@ fun NavigationRoot() {
                 isTablet = isTablet,
                 onLogin = {
                     navController.navigate(NavigationRoute.List) {
-                        popUpTo(NavigationRoute.Login) {
-                            inclusive = true
-                        }
+                        popUpTo(NavigationRoute.Login) { inclusive = true }
                     }
                 },
                 onRegisterClick = {
                     navController.navigate(NavigationRoute.Register) {
-                        popUpTo(NavigationRoute.Login) {
-                            inclusive = true
-                        }
+                        popUpTo(NavigationRoute.Login) { inclusive = true }
                     }
                 }
             )
@@ -119,7 +107,7 @@ fun NavigationRoot() {
                     navController.navigate(NavigationRoute.Edit(id))
                 },
                 onNotePosted = { id ->
-                    navController.navigate(NavigationRoute.Edit(id))
+                    navController.navigate(NavigationRoute.Edit(id, true))
                 },
                 onSettingsClick = {
                     navController.navigate(NavigationRoute.Settings)
@@ -127,9 +115,8 @@ fun NavigationRoot() {
             )
         }
         composable<NavigationRoute.Edit> {
-            EditScreenRoot(
+            NoteScreenRoot(
                 isPortrait = isPortrait,
-                isTablet = isTablet,
                 onBack = {
                     navController.popBackStack()
                 }
@@ -142,7 +129,7 @@ fun NavigationRoot() {
                 },
                 onLogOut = {
                     navController.navigate(NavigationRoute.Login) {
-                        popUpTo(NavigationRoute.Settings) {
+                        popUpTo(NavigationRoute.List) {
                             inclusive = true
                         }
                     }
